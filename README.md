@@ -4,5 +4,9 @@
 ### 3. Create multiple Storage accounts with Containers (one container with one Storage account).
 
 ```diff
-+ Need to fill 'azure-pipelines.yml' & 'azdeploy.parameters.json' based on the environment.
++ Please fill your 'azure-pipelines.yml' & 'azdeploy.parameters.json' based on your environment.
+```
+
+```diff
++ Please share your comments & feedbacks.
 ```
