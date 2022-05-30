@@ -1,0 +1,54 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+name: Multiple_SrorageAccounts-Createion-$(Date:yyyyMMdd)$(Rev:.r)
+
+trigger:
+- main
+
+pool:
+  vmImage: windows-latest
+
+steps:
+- task: CopyFiles@2
+  inputs:
+    Contents: 'azdeploy*'
+    TargetFolder: '$(build.artifactstagingdirectory)'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'artifact_drop'
+    publishLocation: 'Container'
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      # Write your PowerShell commands here.
+      
+      Write-Host "Build.ArtifactStagingDirectory : '$(Build.ArtifactStagingDirectory)'"
+      Write-Host "Build.BuildId : '$(Build.BuildId)'"
+      Write-Host "Build.BuildNumber : '$(Build.BuildNumber)'"
+      Write-Host "Build.BuildUri : '$(Build.BuildUri)'"
+      Write-Host "Build.BinariesDirectory : '$(Build.BinariesDirectory)'"
+      Write-Host "Build.DefinitionName : '$(Build.DefinitionName)'"
+      Write-Host "Build.Repository.ID : '$(Build.Repository.ID)'"
+      Write-Host "Build.Repository.Name : '$(Build.Repository.Name)'"
+      # Write-Host "Resource Group Name : '$(Build.Repository.Name)_$(Build.BuildId)'"
+
+- task: AzureResourceManagerTemplateDeployment@3
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: '[Put your Service Connection Name]'
+    subscriptionId: '[Put your subscriptionId]'
+    action: 'Create Or Update Resource Group'
+    # resourceGroupName: '$(Build.Repository.Name)_$(Build.BuildId)'
+    resourceGroupName: '[Put your resourceGroupName]'
+    location: '[Azure DataCenter location]'
+    templateLocation: 'Linked artifact'
+    csmFile: 'azdeploy.json'
+    csmParametersFile: 'azdeploy.parameters.json'
+    deploymentMode: 'Incremental'
+    deploymentName: '[Your Deployment Name]'
